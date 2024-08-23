@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Jeu du Pendu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #282c34;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #61dafb;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .word, .wrong-guesses, .attempts {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #20232a;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        input[type="text"] {
+            font-size: 24px;
+            padding: 10px;
+            width: 50px;
+            text-align: center;
+            border-radius: 5px;
+            border: 2px solid #61dafb;
+            background-color: #20232a;
+            color: #fff;
+        }
+
+        button {
+            font-size: 24px;
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #61dafb;
+            color: #20232a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #21a1f1;
+        }
+
+        a {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #61dafb;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jeu du Pendu</h1>
+    <p class="word" id="word">Mot à deviner : _ _ _ _ _</p>
+    <p class="attempts" id="attempts">Essais restants : 6</p>
+    <p class="wrong-guesses" id="wrongGuesses">Mauvaises lettres : </p>
+    <form id="guessForm">
+        <input type="text" name="letter" id="letterInput" maxlength="1" required>
+        <button type="submit">Deviner</button>
+    </form>
+    <a href="#" id="resetBtn">Recommencer</a>
+
+    <script>
+        const words = ["JAVASCRIPT", "PENDU", "PROGRAMMATION", "NAVIGATEUR"];
+        let selectedWord = words[Math.floor(Math.random() * words.length)];
+        let attemptsLeft = 6;
+        let guessedLetters = [];
+        let wrongGuesses = [];
+
+        const wordElement = document.getElementById('word');
+        const attemptsElement = document.getElementById('attempts');
+        const wrongGuessesElement = document.getElementById('wrongGuesses');
+        const guessForm = document.getElementById('guessForm');
+        const letterInput = document.getElementById('letterInput');
+        const resetBtn = document.getElementById('resetBtn');
+
+        function updateWordDisplay() {
+            const wordDisplay = selectedWord.split('').map(letter => 
+                guessedLetters.includes(letter) ? letter : "_"
+            ).join(' ');
+            wordElement.textContent = "Mot à deviner : " + wordDisplay;
+        }
+
+        function updateGameState() {
+            updateWordDisplay();
+            attemptsElement.textContent = "Essais restants : " + attemptsLeft;
+            wrongGuessesElement.textContent = "Mauvaises lettres : " + wrongGuesses.join(', ');
+            if (!wordElement.textContent.includes('_')) {
+                alert("Félicitations ! Vous avez deviné le mot !");
+            }
+            if (attemptsLeft <= 0) {
+                alert("Vous avez perdu ! Le mot était : " + selectedWord);
+            }
+        }
+
+        guessForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const guess = letterInput.value.toUpperCase();
+            letterInput.value = '';
+
+            if (guessedLetters.includes(guess) || wrongGuesses.includes(guess)) {
+                alert("Vous avez déjà deviné cette lettre.");
+                return;
+            }
+
+            if (selectedWord.includes(guess)) {
+                guessedLetters.push(guess);
+            } else {
+                wrongGuesses.push(guess);
+                attemptsLeft--;
+            }
+
+            updateGameState();
+        });
+
+        resetBtn.addEventListener('click', function() {
+            selectedWord = words[Math.floor(Math.random() * words.length)];
+            attemptsLeft = 6;
+            guessedLetters = [];
+            wrongGuesses = [];
+            updateGameState();
+        });
+
+        updateWordDisplay();
+    </script>
+</body>
+</html>
